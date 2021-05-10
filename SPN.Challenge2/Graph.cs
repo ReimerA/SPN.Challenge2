@@ -1,134 +1,74 @@
-﻿// C# program to print all
-// paths from a source to
-// destination.
+﻿using System.Collections.Generic;
+using System.Linq;
 
-using System;
-using System.Collections.Generic;
-
-// A directed graph using
-// adjacency list representation
 namespace SPN.Challenge2
 {
     public class Graph
     {
+        public HashSet<Node> Nodes { get; set; } = new();
 
-        // No. of vertices in graph
-        private int v;
-
-        // adjacency list
-        private List<int>[] adjList;
-
-        // Constructor
-        public Graph(int vertices)
+        public void AddRoute(string source, string target, int cost, int time)
         {
-
-            // initialise vertex count
-            this.v = vertices;
-
-            // initialise adjacency list
-            initAdjList();
-        }
-
-        // utility method to initialise
-        // adjacency list
-        private void initAdjList()
-        {
-            adjList = new List<int>[v];
-
-            for (int i = 0; i < v; i++)
+            if (!Nodes.TryGetValue(new Node (source), out Node sourceNode))
             {
-                adjList[i] = new List<int>();
+                sourceNode = new Node(source);
+                Nodes.Add(sourceNode);
             }
+
+
+            if (!Nodes.TryGetValue(new Node(target), out Node targetNode))
+            {
+                targetNode = new Node(target);
+                Nodes.Add(targetNode);
+            }
+
+            sourceNode.Routes.Add(new Route{Target = targetNode, Cost = cost, Time = time});
         }
-
-        // add edge from u to v
-        public void addEdge(int u, int v)
+        
+        public List<CalculatedRoute> PrintAllRoutes(string s, string d)
         {
-            // Add v to u's list.
-            adjList[u].Add(v);
+            var result = new List<CalculatedRoute>();
+            
+            HashSet<string> isVisited = new HashSet<string>();
+            RouteTracker pathList = new RouteTracker();
+            
+            pathList.Nodes.Add(Nodes.Single(x => x.Name == s));
+            
+            PrintAllRoutesUtil(s, d, isVisited, pathList, result);
+
+            return result;
         }
-
-        // Prints all paths from
-        // 's' to 'd'
-        public void printAllPaths(int s, int d)
+        
+        private void PrintAllRoutesUtil(string u, string d,
+            HashSet<string> isVisited,
+            RouteTracker localPathList,
+            List<CalculatedRoute> result)
         {
-            bool[] isVisited = new bool[v];
-            List<int> pathList = new List<int>();
-
-            // add source to path[]
-            pathList.Add(s);
-
-            // Call recursive utility
-            printAllPathsUtil(s, d, isVisited, pathList);
-        }
-
-        // A recursive function to print
-        // all paths from 'u' to 'd'.
-        // isVisited[] keeps track of
-        // vertices in current path.
-        // localPathList<> stores actual
-        // vertices in the current path
-        private void printAllPathsUtil(int u, int d,
-            bool[] isVisited,
-            List<int> localPathList)
-        {
-
             if (u.Equals(d))
             {
-                Console.WriteLine(string.Join(" ", localPathList));
-                // if match found then no need
-                // to traverse more till depth
+                if (localPathList.Nodes.Count > 2)
+                {
+                    result.Add(new CalculatedRoute(localPathList));
+                }
+
                 return;
             }
-
-            // Mark the current node
-            isVisited[u] = true;
-
-            // Recur for all the vertices
-            // adjacent to current vertex
-            foreach (int i in adjList[u])
+            
+            isVisited.Add(u);
+            
+            var currentNode = Nodes.Single(x => x.Name == u);
+            foreach (var i in currentNode.Routes)
             {
-                if (!isVisited[i])
+                if (!isVisited.Contains(i.Target.Name))
                 {
-                    // store current node
-                    // in path[]
-                    localPathList.Add(i);
-                    printAllPathsUtil(i, d, isVisited,
-                        localPathList);
-
-                    // remove current node
-                    // in path[]
-                    localPathList.Remove(i);
+                    localPathList.AddRoute(i);
+                    PrintAllRoutesUtil(i.Target.Name, d, isVisited,
+                        localPathList, result);
+                    localPathList.RemoveRoute(i);
                 }
             }
-
-            // Mark the current node
-            isVisited[u] = false;
+            
+            isVisited.Remove(u);
         }
-
-        // Driver code
-        //public static void Main(String[] args)
-        //{
-        //	// Create a sample graph
-        //	Graph g = new Graph(4);
-        //	g.addEdge(0, 1);
-        //	g.addEdge(0, 2);
-        //	g.addEdge(0, 3);
-        //	g.addEdge(2, 0);
-        //	g.addEdge(2, 1);
-        //	g.addEdge(1, 3);
-
-        //	// arbitrary source
-        //	int s = 2;
-
-        //	// arbitrary destination
-        //	int d = 3;
-
-        //	Console.WriteLine("Following are all different"
-        //					+ " paths from " + s + " to " + d);
-        //	g.printAllPaths(s, d);
-        //}
     }
 }
-
-// This code contributed by Rajput-Ji
