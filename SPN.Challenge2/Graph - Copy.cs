@@ -44,6 +44,27 @@ namespace SPN.Challenge2
         public Node Target { get; set; }
     }
 
+    public class CalculatedRoute
+    {
+        public List<string> Nodes { get; set; } = new();
+        public int Cost { get; set; }
+        public int Time { get; set; }
+
+        public void AddRoute(Route route)
+        {
+            Nodes.Add(route.Target.Name);
+            Cost += route.Cost;
+            Time += route.Time;
+        }
+
+        public void RemoveRoute(Route route)
+        {
+            Nodes.Remove(route.Target.Name);
+            Cost -= route.Cost;
+            Time -= route.Time;
+        }
+    }
+
     public class Graph2
     {
 
@@ -52,30 +73,6 @@ namespace SPN.Challenge2
         {
             
         }
-
-        //// adjacency list
-        //private List<int>[] adjList;
-
-        //// Constructor
-        //public Graph2()
-        //{
-        //    // initialise adjacency list
-        //    initAdjList();
-        //}
-
-
-
-        //// utility method to initialise
-        //// adjacency list
-        //private void initAdjList()
-        //{
-        //    adjList = new List<int>[v];
-
-        //    for (int i = 0; i < v; i++)
-        //    {
-        //        adjList[i] = new List<int>();
-        //    }
-        //}
 
         public void AddRoute(string source, string target, int cost, int time)
         {
@@ -104,17 +101,18 @@ namespace SPN.Challenge2
 
         // Prints all paths from
         // 's' to 'd'
-        public void printAllPaths(string s, string d)
+        public void PrintAllRoutes(string s, string d)
         {
             //bool[] isVisited = new bool[v];
             HashSet<string> isVisited = new HashSet<string>();
-            List<string> pathList = new List<string>();
+            CalculatedRoute pathList = new CalculatedRoute();
 
             // add source to path[]
-            pathList.Add(s);
+            //pathList.Add(s);
+            pathList.Nodes.Add(s);
 
             // Call recursive utility
-            printAllPathsUtil(s, d, isVisited, pathList);
+            PrintAllRoutesUtil(s, d, isVisited, pathList);
         }
 
         // A recursive function to print
@@ -123,16 +121,21 @@ namespace SPN.Challenge2
         // vertices in current path.
         // localPathList<> stores actual
         // vertices in the current path
-        private void printAllPathsUtil(string u, string d,
+        private void PrintAllRoutesUtil(string u, string d,
             HashSet<string> isVisited,
-            List<string> localPathList)
+            CalculatedRoute localPathList)
         {
 
             if (u.Equals(d))
             {
-                Console.WriteLine(string.Join(" ", localPathList));
-                // if match found then no need
-                // to traverse more till depth
+                if (localPathList.Nodes.Count > 2)
+                {
+                    Console.WriteLine(
+                        $"{string.Join(" ", localPathList.Nodes)} Cost: {localPathList.Cost} Time: {localPathList.Time}");
+                    // if match found then no need
+                    // to traverse more till depth
+                }
+
                 return;
             }
 
@@ -149,15 +152,15 @@ namespace SPN.Challenge2
                 {
                     // store current node
                     // in path[]
-                    localPathList.Add(i.Target.Name);
-                    printAllPathsUtil(i.Target.Name, d, isVisited,
+                    //localPathList.Nodes.Add(i.Target.Name);
+                    localPathList.AddRoute(i);
+                    PrintAllRoutesUtil(i.Target.Name, d, isVisited,
                         localPathList);
 
                     // remove current node
                     // in path[]
                     //localPathList.Remove(i);
-                    localPathList.Remove(i.Target.Name);
-
+                    localPathList.RemoveRoute(i);
                 }
             }
 
