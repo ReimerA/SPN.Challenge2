@@ -30,8 +30,9 @@ namespace SPN.Challenge2
             if (suggestRoute != null)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Suggested route is : {string.Join(" ", suggestRoute.Nodes)} since it has lowest time and cost");
+                Console.WriteLine(
+                    $"Suggested route is : {string.Join(" ", suggestRoute.Nodes)} since it has lowest time and cost");
             }
-        }    
+        }
     }
 }
