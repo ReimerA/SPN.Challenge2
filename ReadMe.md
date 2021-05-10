@@ -8,6 +8,8 @@ cat havefun.txt | base64 --decode -i > decoded.zip
 ```
 ZIP-file proved to be password protected, and trying the obvious #TE404, SPNChallenge * < the VOB pass >* etc. did not work. Tried to use fcrackzip with a 136MB rockyou leaked password list, and letting the computer crack away with "John the ripper" as well - all to no avail. A hint from Roberto solved the problem as the pass was a little deviation from the VOB pass we normally use - only difference being a slight change in the casing of two letters.
 
+In the enclosed "delivery.pdf" I have interpreted the assignment as the arrows meaning only in the direction of the arrow is transport possible. I have also understood the assignment as listing all possible routes between two points given the rules outlined, so that a person that can attribute cost to the time and has knowledge to prioritize cost vs. time given the available options.
+
 ## Solution prerequisites
 
 .NET 5 SDK installed - get it here:
